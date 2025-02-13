@@ -1,4 +1,4 @@
-Flask-AppBuilder With OAuth implementation (fir github and google)
+Flask-AppBuilder With OAuth implementation (for github and google)
 --------------------------------------------------------------
 
 - Install it::
