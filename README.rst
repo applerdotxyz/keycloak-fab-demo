@@ -1,4 +1,4 @@
-Base Skeleton to start your application using Flask-AppBuilder
+Flask-AppBuilder With OAuth implementation (fir github and google)
 --------------------------------------------------------------
 
 - Install it::
