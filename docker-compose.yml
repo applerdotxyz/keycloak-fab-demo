@@ -1,0 +1,29 @@
+services:
+  fab_app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FAB_SQLALCHEMY_DATABASE_URI=sqlite:////app/app.db
+    #volumes:
+    #  - ./data:/data  # Persist the database file outside the container
+    depends_on:
+      - keycloak
+    networks:
+      - my_network
+  keycloak:
+    image: keycloak/keycloak:latest
+    ports:
+      - "8080:8080"  # Keycloak will use port 8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost  # Set the hostname for Keycloak
+      KC_HTTP_ENABLED: "true"  # Enable HTTP (not recommended for production)
+    command: ["start-dev"]  # Start Keycloak in development mode
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

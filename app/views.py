@@ -1,8 +1,9 @@
 from flask import render_template
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import ModelView, ModelRestApi
-
-from . import appbuilder, db
+from app.auth import token_required
+from flask import jsonify
+from . import appbuilder, db, app
 
 """
     Create your Model based REST API::
@@ -35,6 +36,14 @@ from . import appbuilder, db
 """
     Application wide 404 error handler
 """
+@app.route('/protected', methods=['GET'])
+@token_required
+def protected():
+    return jsonify({"message": "This is a protected endpoint!", "user": request.user_data})
+
+@app.route('/unprotected', methods=['GET'])
+def unprotected():
+    return jsonify({"message": "This is an unprotected endpoint!"})
 
 
 @appbuilder.app.errorhandler(404)

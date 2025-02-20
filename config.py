@@ -55,6 +55,8 @@ AUTH_USER_REGISTRATION = True
 # The default user self registration role
 AUTH_USER_REGISTRATION_ROLE = "Public"
 
+SameSite = "Lax"
+
 OAUTH_PROVIDERS = [
     {
         "name": "google",
@@ -72,17 +74,32 @@ OAUTH_PROVIDERS = [
         },
     },
     {
-    'name': 'github',
-    'icon': 'fa-github',
-    'token_key': 'access_token',
-    'remote_app': {
-        "client_id": os.getenv("GITHUB_CLIENT_ID"),
-        "client_secret": os.getenv("GITHUB_CLIENT_SECRET"),
-        'api_base_url': 'https://api.github.com/',
-        'client_kwargs': {'scope': 'read:user user:email'},
-        'request_token_url': None,
-        'access_token_url': 'https://github.com/login/oauth/access_token',
-        'authorize_url': 'https://github.com/login/oauth/authorize'
+        'name': 'github',
+        'icon': 'fa-github',
+        'token_key': 'access_token',
+        'remote_app': {
+            "client_id": os.getenv("GITHUB_CLIENT_ID"),
+            "client_secret": os.getenv("GITHUB_CLIENT_SECRET"),
+            'api_base_url': 'https://api.github.com/',
+            'client_kwargs': {'scope': 'read:user user:email'},
+            'request_token_url': None,
+            'access_token_url': 'https://github.com/login/oauth/access_token',
+            'authorize_url': 'https://github.com/login/oauth/authorize'
+        },
+    },
+    {
+        "name": "keycloak",
+        "icon": "fa-key",
+        "token_key": "access_token",
+        "remote_app": {
+            "client_id": "my-fab-app",
+            "client_secret": "BO1El7S5k0maN5D4Nh20bgN1CS4qsDSA",
+            "api_base_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect",
+            "client_kwargs": {
+                "scope": "email profile"
+            },
+            "access_token_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect/token",
+            "authorize_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect/auth"
         },
     },
 ]

@@ -6,3 +6,6 @@ app.db
 env
 venv
 *.sublime*
+.env
+run2.py
+.dockerignore
