@@ -1,20 +1,16 @@
-Flask-AppBuilder With OAuth implementation (for github and google)
+Flask-AppBuilder With Keycloak and JWT
+=======================================
 --------------------------------------------------------------
 
-- Install it::
-
+- Clone the project::
 	git clone https://github.com/Ashutoshgkp/FlaskAppBuilder.git
-	Run a virtual Enviroment
-	pip install -r ./Requirement.txt
 
-- Run it::
+-Build the docker image
 
-    make a .env file and put client secret and id in it.
-    $ export FLASK_APP=app
-    # Create an admin user
-    $ flask fab create-admin
-    # Run dev server
-    $ flask run
+    	$ docker compose up --build
+
+This will run the app on localhost:5000
+And Keycloak on localhost:8080
 
 
 That's it!!
