@@ -5,7 +5,7 @@ FROM python:3.13
 WORKDIR /app
 
 # Copy the project files into the container
-COPY . /app
+ADD . /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y libpq-dev gcc
@@ -20,6 +20,7 @@ EXPOSE 5000
 
 # Set environment variables for Flask
 ENV FLASK_APP=app
+ENV FLASK_DEBUG=True
 
 # Set the command to run the FAB app using flask run
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000", "--debug"]

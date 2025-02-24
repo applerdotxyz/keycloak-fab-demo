@@ -94,12 +94,12 @@ OAUTH_PROVIDERS = [
         "remote_app": {
             "client_id": "my-fab-app",
             "client_secret": "BO1El7S5k0maN5D4Nh20bgN1CS4qsDSA",
-            "api_base_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect",
+            "api_base_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect",
             "client_kwargs": {
                 "scope": "email profile"
             },
-            "access_token_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect/token",
-            "authorize_url": "http://keycloak:8080/realms/myrealm/protocol/openid-connect/auth"
+            "access_token_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/token",
+            "authorize_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/auth"
         },
     },
 ]
