@@ -1,0 +1,13 @@
+*.pyc
+app.db
+./tmp
+./build/*
+.idea
+env
+venv
+*.sublime*
+.env
+run2.py
+.dockerignore
+test.py
+public_key.pem

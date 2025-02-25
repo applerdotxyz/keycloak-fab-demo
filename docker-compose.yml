@@ -1,0 +1,20 @@
+services:
+  keycloak:
+    image: keycloak/keycloak:latest
+    ports:
+      - "8080:8080"  # Keycloak will use port 8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      #KC_HOSTNAME: localhost  # Set the hostname for Keycloak
+      KC_HTTP_ENABLED: "true"  # Enable HTTP (not recommended for production)
+      KC_HOSTNAME_STRICT: "false"  # Allow multiple hostnames
+      KC_HOSTNAME: "http://localhost:8080"  # Keycloak URL for external access
+      KC_HOSTNAME_ADMIN: "http://localhost:8080"
+    command: ["start-dev"] #, "--hostname=keycloak"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
