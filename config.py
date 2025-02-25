@@ -9,6 +9,9 @@ from flask_appbuilder.security.manager import (
     AUTH_OAUTH,
 )
 
+DEBUG = True
+PROPAGATE_EXCEPTIONS = True  # Ensures full error tracebacks appear in logs
+
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "env", ".env"))
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -92,8 +95,8 @@ OAUTH_PROVIDERS = [
         "icon": "fa-key",
         "token_key": "access_token",
         "remote_app": {
-            "client_id": "my-fab-app",
-            "client_secret": "BO1El7S5k0maN5D4Nh20bgN1CS4qsDSA",
+            "client_id": os.getenv("KEYCLOAK_CLIENT_ID"),
+            "client_secret": os.getenv("KEYCLOAK_CLIENT_SECRET"),
             "api_base_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect",
             "client_kwargs": {
                 "scope": "email profile"

@@ -9,3 +9,5 @@ venv
 .env
 run2.py
 .dockerignore
+test.py
+public_key.pem

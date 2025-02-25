@@ -2,8 +2,9 @@ from flask import render_template, g
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import ModelView, ModelRestApi
 from app.auth import token_required
-from flask import jsonify, request
+from flask import jsonify, request,g
 from . import appbuilder, db, app
+import pdb
 
 """
     Create your Model based REST API::
@@ -39,20 +40,22 @@ from . import appbuilder, db, app
 @app.route('/protected', methods=['GET'])
 @token_required
 def protected():
-    return jsonify({"message": "This is a protected endpoint!", "user": request.user_data})
+    return jsonify({
+        "message": "This is a protected endpoint!", 
+        "user": g.user_data  # Fix here
+    })
 
 
 @app.route('/oauth-authorized/keycloak', methods=['GET'])
 # @token_required
 def callback():
     import requests
-
     # Keycloak server details
     keycloak_url = "http://host.docker.internal:8080"
     realm = "my-realm"
     client_id = "my-fab-app"
-    client_secret = "BO1El7S5k0maN5D4Nh20bgN1CS4qsDSA"  # Required for confidential clients
-    redirect_uri = "http://localhost:5000/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
+    client_secret = "xbB9ATn41D7w22RsTOCBiijID2y80biW"  # Required for confidential clients
+    redirect_uri = "http://127.0.0.1:5000/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
 
     # Token endpoint
     token_url = f"{keycloak_url}/realms/{realm}/protocol/openid-connect/token"
@@ -84,7 +87,13 @@ def callback():
         print("Failed to fetch tokens")
         print("Status Code:", response.status_code)
         print("Response:", response.text)
-        return jsonify({"message": "This is a redirected endpoint!", "response": response.__dict__})
+        response_dict = {
+            "status_code": response.status_code,
+            "reason": response.reason,
+            "headers": dict(response.headers),
+            "text": response.text,
+        }
+        return jsonify({"message": "This is a redirected endpoint!", "response": response_dict})
     
 
 @app.route('/unprotected', methods=['GET'])

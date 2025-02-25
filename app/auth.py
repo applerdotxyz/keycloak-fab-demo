@@ -1,61 +1,117 @@
-from functools import wraps
-import jwt
-from flask import request, jsonify
 import requests
+import jwt
+from flask import request, jsonify, g
+from functools import wraps
 
-# Keycloak configuration
 KEYCLOAK_URL = "http://localhost:8080"
 REALM_NAME = "my-realm"
 CLIENT_ID = "my-fab-app"
-# URL to fetch the public key from Keycloak
 PUBLIC_KEY_URL = f"{KEYCLOAK_URL}/realms/{REALM_NAME}/protocol/openid-connect/certs"
 
-# Fetch the public key from Keycloak
+'''
+session = requests.Session()  # Reuse session for better performance
 def get_public_key():
-    response = requests.get(PUBLIC_KEY_URL)
-    # response.raise_for_status()
-    jwks = response.json()
-    public_key = jwt.algorithms.RSAAlgorithm.from_jwk(jwks['keys'][0])
-    return public_key
+    """Fetches the public RSA key from Keycloak with better error handling."""
+    print("Fetching public key")
+    try:
+        response = session.get(PUBLIC_KEY_URL, timeout=15)
+        response.raise_for_status()  # Raises HTTPError if the request fails
+        
+        jwks = response.json()
+        keys = jwks.get("keys", [])
 
-# Decorator to validate JWT token
+        if not keys:
+            raise ValueError("No public keys found in JWKS response")
+
+        # Extract and convert key
+        public_key = jwt.algorithms.RSAAlgorithm.from_jwk(keys[0])
+        return public_key
+
+    except requests.exceptions.Timeout:
+        print("Error: Request timed out while fetching public key.")
+    except requests.exceptions.ConnectionError:
+        pdb.set_trace()
+        print("Error: Could not connect to Keycloak server.")
+    except requests.exceptions.HTTPError as e:
+        pdb.set_trace()
+        print(f"HTTP Error: {e}")
+    except (ValueError, KeyError) as e:
+        pdb.set_trace()
+        print(f"Error processing JWKS response: {e}")
+
+    return None  # Return None on failure
+'''
+'''
+def get_public_key():
+   #Fetches the public RSA key from Keycloak.
+    try:
+        response = requests.get(PUBLIC_KEY_URL, timeout=15)  # Add timeout for robustness
+        response.raise_for_status()
+        jwks = response.json()
+
+        if 'keys' not in jwks or not jwks['keys']:
+            raise ValueError("No public keys found in JWKS response")
+
+        return jwt.algorithms.RSAAlgorithm.from_jwk(jwks['keys'][0])
+
+    except (requests.RequestException, ValueError, KeyError) as e:
+        print(f"Error fetching public key: {e}")
+        return None  # Handle in token_required
+'''
+
+#Hardcoded public key for testing.
+
+
+def get_public_key():
+    
+    public_key_pem = """
+   -----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnDjQ4+Za9sENWDrL5IEy
+yAygejAqqN5CKVCo2fbye1aYKlaCKw5drGPpXNxmt6OU0a5jPcoyfw9tsQfr7z5g
+TE00oJ17QGqntxYfy3h0aGpMQj8OMqYk/zaz5UzClznllK5vc5JdUygHK55WeGZ9
+CuiCUPuWCUIWzuaAsj/QXhue/QoG1GTbBrH+44cJVTfp3saCFEYQm1MTWENvw621
+PG+OWdGj8dh1cNRyN8lGNhqjY7mpOpoM04DAqxw4iCWJHW5tDKTB/tICyLoHFZcO
+1/zlpIDYibsfa4KP/MPxWVk8tO6t8SOchgML/yhg3VU/yG2bwMPXDbp3xlNAJeIl
+3wIDAQAB
+-----END PUBLIC KEY-----
+    """
+    return public_key_pem
+
 def token_required(f):
+    """Decorator to validate JWT tokens from the Authorization header."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
+        if not request.headers.get("Authorization"):
+            return jsonify({"message": "Authorization header missing!"}), 401
 
-        # Get the token from the Authorization header
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split(" ")[1]
+        auth_header = request.headers["Authorization"].strip()
+
+        if not auth_header.startswith("Bearer "):
+            return jsonify({"message": "Invalid authorization header format!"}), 401
+
+        token = auth_header.split(" ")[1] if " " in auth_header else None
 
         if not token:
             return jsonify({"message": "Token is missing!"}), 401
-
+        
         try:
-            # Decode and validate the token
             public_key = get_public_key()
-            # public_key = {
-            #     "kid": "8_VhKcQMNa2nnxlrUrUKfAa1RtHOb8XlUEcmywYm060",
-            #     "kty": "RSA",
-            #     "alg": "RSA-OAEP",
-            #     "use": "enc",
-            #     "n": "5R4k6vcL51M30q7isN8v4OfW8eKYnPPnmr7LkeBYNdVrs_T5yNHgyCPObygfc6v47tFEE7f9P5j1x23t_Uy6EJJUBRpwU6KE1v8J0o0bmFpRW6N9oAaCChdmQY58a_gEMcZmnaQFNZUpumRqvQn1V5JA_aiKtp6VAXG99ZsRKc5wKywqdSbv_k8UOsHVknchr49Hv7soVSrV4p5rxzVW9G1Tm1Uz8kzLUEuW0o2b12hzllaTgz5Pyz3NLINqxTR6kw-epwZAg_o7k9kttAcxZ4oTQ0CKc_7aAgUst1U7TlkWyq4523RQHeoHZFF7qssIDULFrOAxqfOeaWqD9T2FIQ",
-            #     "e": "AQAB",
-            #     "x5c": [
-            #         "MIICnzCCAYcCBgGVKZZ5QzANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhteS1yZWFsbTAeFw0yNTAyMjExNzM2MjJaFw0zNTAyMjExNzM4MDJaMBMxETAPBgNVBAMMCG15LXJlYWxtMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5R4k6vcL51M30q7isN8v4OfW8eKYnPPnmr7LkeBYNdVrs/T5yNHgyCPObygfc6v47tFEE7f9P5j1x23t/Uy6EJJUBRpwU6KE1v8J0o0bmFpRW6N9oAaCChdmQY58a/gEMcZmnaQFNZUpumRqvQn1V5JA/aiKtp6VAXG99ZsRKc5wKywqdSbv/k8UOsHVknchr49Hv7soVSrV4p5rxzVW9G1Tm1Uz8kzLUEuW0o2b12hzllaTgz5Pyz3NLINqxTR6kw+epwZAg/o7k9kttAcxZ4oTQ0CKc/7aAgUst1U7TlkWyq4523RQHeoHZFF7qssIDULFrOAxqfOeaWqD9T2FIQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQDSeUGxYX4nK1F9s1W453w6qGuX/mQ0zTFkPFmCM1uLOTAcsrHB9gIesHEJvyOMNeH1Pz8sPPb4+izF8DPPrusmsrNtLLqzcBFaZf7DLflxQnGQdYB6VOzp2Urz2yIgGkl7wdhjAk1v9l1Yf8FBWIk8Wu3ST7qLMnjAymLkuOWJj6tCozHR1h79Ft2Vemlch1KQEIia28YRBRYpnWs7vOQiOqN59PGEgpK22xUzT+BvLefCUtdajGhWZr12mY9kmmUP4dEYteNxtZ5kpuqKh1C0mW6DS8KCEk7CrEpHbrmkrQEV7JEiEBY1WSbUlADW4KPSfUVkgLDMJirk2uGlWWtJ"
-            #     ],
-            #     "x5t": "0A7SH-YurP21gb80ENAiCgdWY-I",
-            #     "x5t#S256": "0RJS_k3cHtDwmfEpgXPxq82B5nQQI7270mmZSCgNwxc"
-            #     }    
-            data = jwt.decode(token, public_key, algorithms=["RS256"], audience=CLIENT_ID)
-            # Optionally, you can add more checks here (e.g., roles, expiration, etc.)
+            if not public_key:
+                return jsonify({"message": "Failed to fetch public key!"}), 500
+
+            data = jwt.decode(token, public_key, algorithms=["RS256"], options={"verify_aud": False})
+
+            # Manually check audience (Keycloak may use azp instead of aud)
+            if data.get("aud") != CLIENT_ID and data.get("azp") != CLIENT_ID:
+                return jsonify({"message": "Invalid audience!"}), 401
+
+            g.user_data = data  # Store token data in Flask's global context
+
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token has expired!"}), 401
         except jwt.InvalidTokenError:
             return jsonify({"message": "Invalid token!"}), 401
 
-        # Attach the decoded token data to the request object
-        request.user_data = data
         return f(*args, **kwargs)
 
     return decorated

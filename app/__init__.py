@@ -15,6 +15,9 @@ app.config.from_object("config")
 db = SQLA(app)
 appbuilder = AppBuilder(app, db.session)
 
+#just trying--- can remove later
+logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
 
 
 """
@@ -31,3 +34,6 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 """
 
 from . import views
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True, reload=True)

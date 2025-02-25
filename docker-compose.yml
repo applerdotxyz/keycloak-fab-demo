@@ -4,14 +4,17 @@ services:
     ports:
       - "5000:5000"
     environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
       - FAB_SQLALCHEMY_DATABASE_URI=sqlite:////app/app.db
-      - FLASK_DEBUG=True
-    #volumes:
-    #  - ./data:/data  # Persist the database file outside the container
+    volumes:
+      - ./public_key.pem:/app/public_key.pem
     depends_on:
       - keycloak
     networks:
       - my_network
+    command: python -m flask run --host=0.0.0.0 --port=5000 --debug --reload
   keycloak:
     image: keycloak/keycloak:latest
     ports:
@@ -19,9 +22,13 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: localhost  # Set the hostname for Keycloak
+      #KC_HOSTNAME: localhost  # Set the hostname for Keycloak
       KC_HTTP_ENABLED: "true"  # Enable HTTP (not recommended for production)
-    command: ["start-dev"]  # Start Keycloak in development mode
+      KC_HOSTNAME_STRICT: "false"  # Allow multiple hostnames
+      #KC_HOSTNAME: "keycloak"
+      KC_HOSTNAME: "http://localhost:8080"  # Keycloak URL for external access
+      KC_HOSTNAME_ADMIN: "http://localhost:8080"
+    command: ["start-dev"] #, "--hostname=keycloak"
     networks:
       - my_network
 
