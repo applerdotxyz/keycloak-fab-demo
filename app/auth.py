@@ -8,7 +8,6 @@ REALM_NAME = "my-realm"
 CLIENT_ID = "my-fab-app"
 PUBLIC_KEY_URL = f"{KEYCLOAK_URL}/realms/{REALM_NAME}/protocol/openid-connect/certs"
 
-'''
 session = requests.Session()  # Reuse session for better performance
 def get_public_key():
     """Fetches the public RSA key from Keycloak with better error handling."""
@@ -30,25 +29,21 @@ def get_public_key():
     except requests.exceptions.Timeout:
         print("Error: Request timed out while fetching public key.")
     except requests.exceptions.ConnectionError:
-        pdb.set_trace()
         print("Error: Could not connect to Keycloak server.")
     except requests.exceptions.HTTPError as e:
-        pdb.set_trace()
         print(f"HTTP Error: {e}")
     except (ValueError, KeyError) as e:
-        pdb.set_trace()
         print(f"Error processing JWKS response: {e}")
 
     return None  # Return None on failure
 '''
-'''
+
 def get_public_key():
    #Fetches the public RSA key from Keycloak.
     try:
         response = requests.get(PUBLIC_KEY_URL, timeout=15)  # Add timeout for robustness
         response.raise_for_status()
         jwks = response.json()
-
         if 'keys' not in jwks or not jwks['keys']:
             raise ValueError("No public keys found in JWKS response")
 
@@ -58,7 +53,7 @@ def get_public_key():
         print(f"Error fetching public key: {e}")
         return None  # Handle in token_required
 '''
-
+'''
 #Hardcoded public key for testing.
 
 
@@ -76,7 +71,7 @@ PG+OWdGj8dh1cNRyN8lGNhqjY7mpOpoM04DAqxw4iCWJHW5tDKTB/tICyLoHFZcO
 -----END PUBLIC KEY-----
     """
     return public_key_pem
-
+'''
 def token_required(f):
     """Decorator to validate JWT tokens from the Authorization header."""
     @wraps(f)
