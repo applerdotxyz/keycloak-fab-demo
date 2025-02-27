@@ -60,6 +60,7 @@ AUTH_USER_REGISTRATION_ROLE = "Public"
 
 SameSite = "Lax"
 
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "my-realm"
 OAUTH_PROVIDERS = [
     {
         "name": "google",
@@ -94,15 +95,17 @@ OAUTH_PROVIDERS = [
         "name": "keycloak",
         "icon": "fa-key",
         "token_key": "access_token",
-        "remote_app": {
+        "remote_app": 
+        {
             "client_id": os.getenv("KEYCLOAK_CLIENT_ID"),
             "client_secret": os.getenv("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect",
-            "client_kwargs": {
+            "api_base_url": f"http://localhost:8080/realms/{KEYCLOAK_REALM}/protocol/openid-connect",
+            "client_kwargs": 
+            {
                 "scope": "email profile"
             },
-            "access_token_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/token",
-            "authorize_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/auth"
+            "access_token_url": f"http://localhost:8080/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token",
+            "authorize_url": f"http://localhost:8080/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
         },
     },
 ]
