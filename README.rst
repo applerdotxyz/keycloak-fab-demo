@@ -12,6 +12,16 @@ Flask-AppBuilder With Keycloak and JWT
 
   This will run the keycloak at localhost:8000
 
+- Make a virtual enviroment::
+
+	virtaulenv env
+- Launch the virtual enviroment::
+
+	./env/Scripts/activate.ps1
+- Install dependencies::
+
+	pip install -r Requirement.txt
+
 - Run the fab app::
 
 	flask run --host=0.0.0.0 --port=5000  # --debug --reload (if running on dubug mode add this)
