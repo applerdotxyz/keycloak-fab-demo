@@ -5,12 +5,28 @@ Flask-AppBuilder With Keycloak and JWT
 - Clone the project::
 
 	git clone https://github.com/applerdotxyz/keycloak-fab-demo.git
+---------------------------------------------------------------
 
 - Build the docker image::
 
     	docker compose up --build
 
   This will run the keycloak at localhost:8000
+- Go to localhost:8000
+- Create a Realm
+- Create a client
+- Create a User
+  - give that User a Password. Set Temporary to off.
+----------------------------------------------------------------
+
+- Create a .env file in your project folder.
+- add client id and secret from the Keycloak console in this format
+**KEYCLOAK_REALM=<Your-realm-name>**  
+
+**KEYCLOAK_CLIENT_ID=<Your-client-id>**  
+
+**KEYCLOAK_CLIENT_SECRET=<Your-client-secret>**  
+
 
 - Make a virtual enviroment::
 
