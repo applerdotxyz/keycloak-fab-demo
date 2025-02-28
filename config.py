@@ -18,6 +18,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Your App secret key
 SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_hex(32))
 
+JWT_ALGORITHM = "RS256"
+JWT_PUBLIC_KEY = open("public_key.pem").read()  # Load Keycloak public key
+
 # The SQLAlchemy connection string.
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
 SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -60,6 +63,8 @@ AUTH_USER_REGISTRATION_ROLE = "Public"
 
 SameSite = "Lax"
 
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "my-realm")
+
 OAUTH_PROVIDERS = [
     {
         "name": "google",
@@ -91,20 +96,22 @@ OAUTH_PROVIDERS = [
         },
     },
     {
-        "name": "keycloak",
-        "icon": "fa-key",
-        "token_key": "access_token",
-        "remote_app": {
-            "client_id": os.getenv("KEYCLOAK_CLIENT_ID"),
-            "client_secret": os.getenv("KEYCLOAK_CLIENT_SECRET"),
-            "api_base_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect",
-            "client_kwargs": {
-                "scope": "email profile"
-            },
-            "access_token_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/token",
-            "authorize_url": "http://localhost:8080/realms/my-realm/protocol/openid-connect/auth"
+    "name": "keycloak",
+    "icon": "fa-key",
+    "token_key": "access_token",
+    "remote_app": {
+        "client_id": os.getenv("KEYCLOAK_CLIENT_ID"),
+        "client_secret": os.getenv("KEYCLOAK_CLIENT_SECRET"),
+        "api_base_url": f"{os.getenv('KEYCLOAK_BASE_URL')}/realms/{KEYCLOAK_REALM}/protocol/openid-connect",
+        "client_kwargs": {
+            "scope": "email profile"
         },
+        "access_token_url": f"{os.getenv('KEYCLOAK_BASE_URL')}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token",
+        "authorize_url": f"{os.getenv('KEYCLOAK_BASE_URL')}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth",
+        "jwks_algorithms": ["RS256"]
     },
+}
+
 ]
 AUTH_ROLES_MAPPING = {
     "FAB_USERS": ["User"],

@@ -4,8 +4,14 @@ from flask_appbuilder import ModelView, ModelRestApi
 from app.auth import token_required
 from flask import jsonify, request,g
 from . import appbuilder, db, app
-import pdb
+from app.util import has_role, has_permission
+import os
+from dotenv import load_dotenv
+# Get the parent directory of the current file (views.py)
+PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+# Load .env file from the parent directory
+load_dotenv(dotenv_path=os.path.join(PARENT_DIR, ".env"))
 """
     Create your Model based REST API::
 
@@ -51,10 +57,12 @@ def protected():
 def callback():
     import requests
     # Keycloak server details
-    keycloak_url = "http://host.docker.internal:8080"
-    realm = "my-realm"
-    client_id = "my-fab-app"
-    client_secret = "xbB9ATn41D7w22RsTOCBiijID2y80biW"  # Required for confidential clients
+
+    keycloak_url = os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8080")
+    #keycloak_url = "http://localhost:8080"
+    realm = os.getenv("KEYCLOAK_REALM", "my-realm")
+    client_id = os.getenv("KEYCLOAK_CLIENT_ID")
+    client_secret = os.getenv("KEYCLOAK_CLIENT_SECERT")  # Required for confidential clients
     redirect_uri = "http://127.0.0.1:5000/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
 
     # Token endpoint
@@ -99,6 +107,17 @@ def callback():
 @app.route('/unprotected', methods=['GET'])
 def unprotected():
     return jsonify({"message": "This is an unprotected endpoint!"})
+
+
+@app.route('/admin', methods=['GET'])
+@token_required
+@has_permission("account",["manage-account"])
+@has_role("default-roles-my-realm")
+def admin_only():
+    return jsonify({
+        "message": "Welcome, Admin!",
+        "user": g.user_data
+    })
 
 
 @appbuilder.app.errorhandler(404)

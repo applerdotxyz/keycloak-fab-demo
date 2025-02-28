@@ -2,6 +2,7 @@ import requests
 import jwt
 from flask import request, jsonify, g
 from functools import wraps
+from flask_jwt_extended import get_jwt_identity
 
 KEYCLOAK_URL = "http://localhost:8080"
 REALM_NAME = "my-realm"
@@ -73,34 +74,31 @@ PG+OWdGj8dh1cNRyN8lGNhqjY7mpOpoM04DAqxw4iCWJHW5tDKTB/tICyLoHFZcO
     return public_key_pem
 '''
 def token_required(f):
-    """Decorator to validate JWT tokens from the Authorization header."""
+    """Decorator to verify JWT and store user data in Flask's global context (g)."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not request.headers.get("Authorization"):
-            return jsonify({"message": "Authorization header missing!"}), 401
-
-        auth_header = request.headers["Authorization"].strip()
+        auth_header = request.headers.get("Authorization", "").strip()
 
         if not auth_header.startswith("Bearer "):
-            return jsonify({"message": "Invalid authorization header format!"}), 401
+            return jsonify({"message": "Missing or invalid authorization header!"}), 401
 
-        token = auth_header.split(" ")[1] if " " in auth_header else None
+        token = auth_header.split(" ")[1]
 
-        if not token:
-            return jsonify({"message": "Token is missing!"}), 401
-        
         try:
             public_key = get_public_key()
             if not public_key:
                 return jsonify({"message": "Failed to fetch public key!"}), 500
 
-            data = jwt.decode(token, public_key, algorithms=["RS256"], options={"verify_aud": False})
+            # Decode token without verifying 'aud' (audience) by default
+            decoded_token = jwt.decode(token, public_key, algorithms=["RS256"], options={"verify_aud": False})
 
-            # Manually check audience (Keycloak may use azp instead of aud)
-            if data.get("aud") != CLIENT_ID and data.get("azp") != CLIENT_ID:
+            # Validate audience manually (Keycloak uses 'azp' instead of 'aud' sometimes)
+            if decoded_token.get("aud") != CLIENT_ID and decoded_token.get("azp") != CLIENT_ID:
                 return jsonify({"message": "Invalid audience!"}), 401
 
-            g.user_data = data  # Store token data in Flask's global context
+            # Store the decoded token in Flask's global context
+            g.user_data = decoded_token  # Allows access in other decorators
+            g.user_identity = decoded_token.get("sub")  # Stores user identity for convenience
 
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token has expired!"}), 401
