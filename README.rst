@@ -20,12 +20,15 @@ Flask-AppBuilder With Keycloak and JWT
 ----------------------------------------------------------------
 
 - Create a .env file in your project folder.
-- add client id and secret from the Keycloak console in this format
-**KEYCLOAK_REALM=<Your-realm-name>**  
+- add client id, client secret, realm-name and keycloak base url (in this case localhost:8080) from the Keycloak console in this format::
 
-**KEYCLOAK_CLIENT_ID=<Your-client-id>**  
+	KEYCLOAK_BASE_URL=<Your-Keycloak-url>
 
-**KEYCLOAK_CLIENT_SECRET=<Your-client-secret>**  
+	KEYCLOAK_REALM=<Your-realm-name>  
+
+	KEYCLOAK_CLIENT_ID=<Your-client-id>  
+
+	KEYCLOAK_CLIENT_SECRET=<Your-client-secret>  
 
 
 - Make a virtual enviroment::
