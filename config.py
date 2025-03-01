@@ -60,7 +60,7 @@ AUTH_USER_REGISTRATION_ROLE = "Public"
 
 SameSite = "Lax"
 
-KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "my-realm"
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "my-realm")
 OAUTH_PROVIDERS = [
     {
         "name": "google",
