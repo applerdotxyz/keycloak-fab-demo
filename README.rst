@@ -8,27 +8,39 @@ Flask-AppBuilder With Keycloak and JWT
 - Build the docker image::
     $ docker compose up --build
 
-This will run the app on localhost:5000
-And Keycloak on localhost:8080
+  This will run the keycloak at localhost:8000
+- Go to localhost:8000
+- Create a Realm
+- Create a client
+- Create a User
+  - give that User a Password. Set Temporary to off.
+----------------------------------------------------------------
 
-- To run the Flask application locally, follow these steps:
+- Create a .env file in your project folder.
+- add client id and secret from the Keycloak console in this format
+**KEYCLOAK_REALM=<Your-realm-name>**  
 
-1. Activate the virtual environment:
-   ```
-   source .venv/bin/activate
-   ```
+**KEYCLOAK_CLIENT_ID=<Your-client-id>**  
 
-2. Install the required packages:
-   ```
-   pip install -r Requirements.txt
-   ```
+**KEYCLOAK_CLIENT_SECRET=<Your-client-secret>**  
 
-3. Run the Flask application:
-   ```
-   flask run
-   ```
 
-eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmNTNkMTlkNi1jNGNmLTRmMzEtYTEyZi1lNWNhM2I4YjkxYjkifQ.eyJleHAiOjE3NDAyNDYxOTQsImlhdCI6MTc0MDE1OTc5NCwianRpIjoiNDgwOWRmM2YtNjY1Mi00NWI5LWJmMTMtNWQ3NTE5M2FiZWE5IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9teS1yZWFsbSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvbXktcmVhbG0iLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.UfnJv3qlcA_SdFPyMgwNPS0jiJsTlDafL-yo_Mzeh-ycgN2P3K6tI_bw9VMO5763-YC445fEGmvxHM9uE_6UpA
+- Make a virtual enviroment::
 
+	virtaulenv env
+- Launch the virtual enviroment::
+
+	./env/Scripts/activate.ps1
+- Install dependencies::
+
+	pip install -r Requirement.txt
+
+- Run the fab app::
+
+	flask run --host=0.0.0.0 --port=5000  # --debug --reload (if running on dubug mode add this)
+
+  This will run the FAB app at localhost:5000
 
 That's it!!
+
+
