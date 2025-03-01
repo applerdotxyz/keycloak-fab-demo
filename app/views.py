@@ -5,6 +5,7 @@ from app.auth import token_required
 from flask import jsonify, request,g
 from . import appbuilder, db, app
 import pdb
+import os
 
 """
     Create your Model based REST API::
@@ -51,10 +52,10 @@ def protected():
 def callback():
     import requests
     # Keycloak server details
-    keycloak_url = "http://host.docker.internal:8080"
+    keycloak_url = "http://localhost:8080"
     realm = "my-realm"
     client_id = "my-fab-app"
-    client_secret = "xbB9ATn41D7w22RsTOCBiijID2y80biW"  # Required for confidential clients
+    client_secret = os.getenv("KEYCLOAK_CLIENT_SECRET")  # Required for confidential clients 
     redirect_uri = "http://127.0.0.1:5000/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
 
     # Token endpoint
