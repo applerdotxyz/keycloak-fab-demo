@@ -57,9 +57,7 @@ def protected():
 def callback():
     import requests
     # Keycloak server details
-
     keycloak_url = os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8080")
-    #keycloak_url = "http://localhost:8080"
     realm = os.getenv("KEYCLOAK_REALM", "my-realm")
     client_id = os.getenv("KEYCLOAK_CLIENT_ID")
     client_secret = os.getenv("KEYCLOAK_CLIENT_SECERT")  # Required for confidential clients
