@@ -58,12 +58,12 @@ def callback():
     import requests
     # Keycloak server details
 
-    keycloak_url = os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8080")
-    #keycloak_url = "http://localhost:8080"
-    realm = os.getenv("KEYCLOAK_REALM", "my-realm")
+    keycloak_url = os.getenv("KEYCLOAK_BASE_URL")
+    realm = os.getenv("KEYCLOAK_REALM")
     client_id = os.getenv("KEYCLOAK_CLIENT_ID")
     client_secret = os.getenv("KEYCLOAK_CLIENT_SECERT")  # Required for confidential clients
-    redirect_uri = "http://127.0.0.1:5000/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
+    fab_url = os.getenv("FAB_URL") 
+    redirect_uri = f"{fab_url}/oauth-authorized/keycloak"  # Must match the redirect URI used in the initial request
 
     # Token endpoint
     token_url = f"{keycloak_url}/realms/{realm}/protocol/openid-connect/token"
@@ -112,7 +112,7 @@ def unprotected():
 @app.route('/admin', methods=['GET'])
 @token_required
 @has_permission("account",["manage-account"])
-@has_role("default-roles-my-realm")
+#@has_role("default-roles-my-realm")
 def admin_only():
     return jsonify({
         "message": "Welcome, Admin!",
