@@ -13,38 +13,24 @@ Clone the Project
 Install Virtual Environment
 ----------------------------
 
-- Install virtual environment:
+- Install and activate a virtual env and install all required dependecies in Requirement.txt
 
-  .. code-block:: bash
-
-     pip install virtualenv
-
-- Create a virtual environment:
-
-  .. code-block:: bash
-
-     virtualenv env
-
-- Activate the virtual environment:
-
-  .. code-block:: powershell
-
-     ./env/Scripts/activate.ps1
-
-- Install dependencies:
-
-  .. code-block:: bash
-
-     pip install -r requirements.txt
-
-Run Tests with SeleniumBase
+Make a .env file
 ----------------------------
 
-- Run the project through pytest with SeleniumBase:
+- Make a .env file with the same format as .env.sample and populate it with variables.
+
+Setup Keycloak
+----------------------------
+
+- Run the project through pytest with SeleniumBase (Automated):
 
   .. code-block:: bash
 
      pytest pytest-Keycloak.py --html=report.html
+
+Populate .env file
+----------------------------
 
 - Open a browser and go to `http://localhost:8080/`, then log in with the credentials:
 
