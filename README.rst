@@ -1,53 +1,83 @@
 Flask-AppBuilder With Keycloak and JWT
 =======================================
---------------------------------------------------------------
 
-- Clone the project::
+Clone the Project
+-----------------
 
-	git clone https://github.com/applerdotxyz/keycloak-fab-demo.git
----------------------------------------------------------------
+- Clone the project:
 
-- Build the docker image::
+  .. code-block:: bash
 
-    	docker compose up --build
+     git clone https://github.com/applerdotxyz/keycloak-fab-demo.git
 
-  This will run the keycloak at localhost:8000
-- Go to localhost:8000
-- Create a Realm
-- Create a client
-- Create a User
-  - give that User a Password. Set Temporary to off.
-----------------------------------------------------------------
+Install Virtual Environment
+----------------------------
 
-- Create a .env file in your project folder.
+- Install and activate a virtual env and install all required dependecies in Requirement.txt
 
-- add client id, client secret, realm-name and keycloak base url (in this case localhost:8080) from the Keycloak console in this format::
+Make a .env file
+----------------------------
 
-	KEYCLOAK_BASE_URL=<Your-Keycloak-url>
+- Make a .env file with the same format as .env.sample and populate it with variables.
 
-	KEYCLOAK_REALM=<Your-realm-name>  
+Setup Keycloak
+----------------------------
 
-	KEYCLOAK_CLIENT_ID=<Your-client-id>  
+- Run the project through pytest with SeleniumBase (Automated):
 
-	KEYCLOAK_CLIENT_SECRET=<Your-client-secret>  
+  .. code-block:: bash
 
+     pytest pytest-Keycloak.py --html=report.html
 
-- Make a virtual enviroment::
+Populate .env file
+----------------------------
 
-	virtaulenv env
-- Launch the virtual enviroment::
+- Open a browser and go to `http://localhost:8080/`, then log in with the credentials:
 
-	./env/Scripts/activate.ps1
-- Install dependencies::
+  **Username:** admin  
+  **Password:** admin  
 
-	pip install -r Requirement.txt
+- Click the dropdown menu next to the realm name and select the realm:
 
-- Run the fab app::
+  **Realm Name:** `myrealm` (or whatever realm name you choose)
 
-	flask run --host=0.0.0.0 --port=5000  # --debug --reload (if running on dubug mode add this)
+- Click on **Realm Settings** in the left menu, then go to the **Keys** tab.
 
-  This will run the FAB app at localhost:5000
+- Click on the **Public Key** for **Algorithm RS256**, copy the key, and paste it into `.env` under the `PUBLIC_KEY` variable.
 
-That's it!!
+Run the Flask AppBuilder (FAB) App
+-----------------------------------
 
+- Run the FAB app:
 
+  .. code-block:: bash
+
+     pytest pytest-fab.py --html=report.html
+
+- Run API tests:
+
+  .. code-block:: bash
+
+     pytest pytest-api.py -v
+
+**Note:** SeleniumBase may have timing errors. If a test fails, try running it again.  
+If you want to change the realm, user, or client name, update the `.env` file.
+
+Debugging Keycloak and FAB App
+-------------------------------
+
+- To run Keycloak and the FAB app for debugging:
+
+  1. Start the Keycloak server:
+
+     .. code-block:: bash
+
+        docker compose up --build
+
+  2. Run the FAB app:
+
+     .. code-block:: bash
+
+        flask run --host=0.0.0.0 --port=5000
+
+That's it!

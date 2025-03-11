@@ -19,7 +19,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_hex(32))
 
 JWT_ALGORITHM = "RS256"
-JWT_PUBLIC_KEY = open("public_key.pem").read()  # Load Keycloak public key
+#JWT_PUBLIC_KEY = open("public_key.pem").read()  # Load Keycloak public key
 
 # The SQLAlchemy connection string.
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "app.db")
