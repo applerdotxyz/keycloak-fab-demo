@@ -4,7 +4,7 @@ from flask_appbuilder import ModelView, ModelRestApi
 from app.auth import token_required
 from flask import jsonify, request,g
 from . import appbuilder, db, app
-import pdb
+from app.util import has_role, has_permission
 import os
 from dotenv import load_dotenv
 # Get the parent directory of the current file (views.py)
@@ -57,7 +57,7 @@ def protected():
 def callback():
     import requests
     # Keycloak server details
-    keycloak_url = "http://localhost:8080"
+    keycloak_url = os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8080")
     realm = os.getenv("KEYCLOAK_REALM", "my-realm")
     client_id = os.getenv("KEYCLOAK_CLIENT_ID")
     client_secret = os.getenv("KEYCLOAK_CLIENT_SECERT")  # Required for confidential clients
@@ -105,6 +105,17 @@ def callback():
 @app.route('/unprotected', methods=['GET'])
 def unprotected():
     return jsonify({"message": "This is an unprotected endpoint!"})
+
+
+@app.route('/admin', methods=['GET'])
+@token_required
+@has_permission("account",["manage-account"])
+@has_role("default-roles-my-realm")
+def admin_only():
+    return jsonify({
+        "message": "Welcome, Admin!",
+        "user": g.user_data
+    })
 
 
 @appbuilder.app.errorhandler(404)
