@@ -3,13 +3,10 @@ Flask-AppBuilder With Keycloak and JWT
 --------------------------------------------------------------
 
 - Clone the project::
-
-	git clone https://github.com/applerdotxyz/keycloak-fab-demo.git
----------------------------------------------------------------
+    git clone https://github.com/Ashutoshgkp/FlaskAppBuilder.git
 
 - Build the docker image::
-
-    	docker compose up --build
+    $ docker compose up --build
 
   This will run the keycloak at localhost:8000
 - Go to localhost:8000
