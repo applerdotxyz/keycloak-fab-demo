@@ -57,7 +57,6 @@ def protected():
 def callback():
     import requests
     # Keycloak server details
-
     keycloak_url = os.getenv("KEYCLOAK_BASE_URL")
     realm = os.getenv("KEYCLOAK_REALM")
     client_id = os.getenv("KEYCLOAK_CLIENT_ID")
